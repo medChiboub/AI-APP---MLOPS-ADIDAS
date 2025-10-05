@@ -58,7 +58,7 @@ class ProfitPredictor:
         except Exception as e:
             raise Exception(f"Error loading model: {str(e)}")
     
-    def predict_single(self, product, region, sales_method, price_per_unit, units_sold):
+    def predict_single(self, product, region, sales_method, retailer, price_per_unit, units_sold):
         """
         Make a prediction for a single input
         
@@ -66,6 +66,7 @@ class ProfitPredictor:
             product: Product category (e.g., "Men's Apparel")
             region: Region (e.g., "West")
             sales_method: Sales method (e.g., "Online")
+            retailer: Retailer name (e.g., "Walmart")
             price_per_unit: Price per unit in dollars
             units_sold: Number of units sold
         
@@ -74,7 +75,7 @@ class ProfitPredictor:
         """
         try:
             # Create input dataframe
-            input_df = create_input_dataframe(product, region, sales_method, price_per_unit, units_sold)
+            input_df = create_input_dataframe(product, region, sales_method, retailer, price_per_unit, units_sold)
             
             # Preprocess the input
             processed_df = preprocess_data(input_df, is_training=False, encoders_path=self.encoders_path)

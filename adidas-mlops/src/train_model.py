@@ -44,7 +44,7 @@ def train_model(data_path, model_save_path='../models/', test_size=0.2, random_s
     print("🔧 Preparing features...")
     feature_columns = [
         'Price per Unit', 'Units Sold', 'Year', 'Month', 'Quarter',
-        'Region_encoded', 'Product_encoded', 'Sales Method_encoded',
+        'Region_encoded', 'Product_encoded', 'Sales Method_encoded', 'Retailer_encoded',
         'Profit_Margin', 'Revenue_per_Unit'
     ]
     

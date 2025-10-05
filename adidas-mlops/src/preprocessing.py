@@ -85,7 +85,7 @@ def preprocess_data(df, is_training=True, encoders_path='../models/label_encoder
         df_processed['Profit_Margin'] = 0.3  # Default profit margin assumption
     
     # Handle categorical encoding
-    categorical_features = ['Region', 'Product', 'Sales Method']
+    categorical_features = ['Region', 'Product', 'Sales Method', 'Retailer']
     
     if is_training:
         # Create and fit new encoders
@@ -140,7 +140,7 @@ def prepare_features(df, feature_columns=None):
     
     return df[feature_columns]
 
-def create_input_dataframe(product, region, sales_method, price_per_unit, units_sold):
+def create_input_dataframe(product, region, sales_method, retailer, price_per_unit, units_sold):
     """
     Create a DataFrame from individual input values for inference
     
@@ -148,6 +148,7 @@ def create_input_dataframe(product, region, sales_method, price_per_unit, units_
         product: Product category
         region: Region
         sales_method: Sales method
+        retailer: Retailer name
         price_per_unit: Price per unit
         units_sold: Number of units sold
     
@@ -158,6 +159,7 @@ def create_input_dataframe(product, region, sales_method, price_per_unit, units_
         'Product': product,
         'Region': region,
         'Sales Method': sales_method,
+        'Retailer': retailer,
         'Price per Unit': price_per_unit,
         'Units Sold': units_sold
     }])

@@ -40,6 +40,7 @@ class PredictionRequest(BaseModel):
     Product: str = Field(..., description="Product category (e.g., 'Men's Apparel')")
     Region: str = Field(..., description="Sales region (e.g., 'West')")
     Sales_Method: str = Field(..., description="Sales method (e.g., 'Online')")
+    Retailer: str = Field(..., description="Retailer name (e.g., 'Walmart', 'Amazon')")
     Price_per_Unit: float = Field(..., gt=0, description="Price per unit in dollars")
     Units_Sold: int = Field(..., gt=0, description="Number of units sold")
 
@@ -133,6 +134,7 @@ async def predict_profit(request: PredictionRequest):
             product=request.Product,
             region=request.Region,
             sales_method=request.Sales_Method,
+            retailer=request.Retailer,
             price_per_unit=request.Price_per_Unit,
             units_sold=request.Units_Sold
         )
@@ -147,6 +149,7 @@ async def predict_profit(request: PredictionRequest):
                 "Product": request.Product,
                 "Region": request.Region,
                 "Sales_Method": request.Sales_Method,
+                "Retailer": request.Retailer,
                 "Price_per_Unit": request.Price_per_Unit,
                 "Units_Sold": request.Units_Sold,
                 "Total_Sales": request.Price_per_Unit * request.Units_Sold
@@ -195,6 +198,14 @@ async def get_categories():
                 "Online",
                 "In-store",
                 "Outlet"
+            ],
+            "retailers": [
+                "Amazon",
+                "Foot Locker",
+                "Kohl's",
+                "Sports Direct",
+                "Walmart",
+                "West Gear"
             ]
         }
         

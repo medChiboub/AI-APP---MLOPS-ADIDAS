@@ -193,13 +193,14 @@ def get_model_info():
     except requests.exceptions.RequestException:
         return None
 
-def make_prediction(product, region, sales_method, price_per_unit, units_sold):
+def make_prediction(product, region, sales_method, retailer, price_per_unit, units_sold):
     """Make a prediction using the API"""
     try:
         payload = {
             "Product": product,
             "Region": region,
             "Sales_Method": sales_method,
+            "Retailer": retailer,
             "Price_per_Unit": price_per_unit,
             "Units_Sold": units_sold
         }
@@ -321,7 +322,7 @@ def create_prediction_interface():
     with st.form("executive_prediction_form", clear_on_submit=False):
         st.markdown("### 📊 Strategic Scenario Configuration")
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown("#### 📦 Product Strategy")
@@ -330,14 +331,16 @@ def create_prediction_interface():
                 categories["products"],
                 help="Select primary product category for analysis"
             )
-            
+        
+        with col2:
+            st.markdown("#### 🌍 Market Strategy")
             region = st.selectbox(
                 "Target Market", 
                 categories["regions"],
                 help="Select geographic market for deployment"
             )
         
-        with col2:
+        with col3:
             st.markdown("#### 🛒 Sales Strategy")
             sales_method = st.selectbox(
                 "Sales Channel",
@@ -345,16 +348,19 @@ def create_prediction_interface():
                 help="Select primary sales channel strategy"
             )
             
-            # Add advanced options
-            market_condition = st.selectbox(
-                "Market Conditions",
-                ["Optimal", "Standard", "Challenging"],
-                index=1,
-                help="Current market environment assessment"
+        with col4:
+            st.markdown("#### 🏪 Retail Strategy")
+            retailer = st.selectbox(
+                "Retail Partner",
+                categories["retailers"],
+                help="Select retail partner for this scenario"
             )
         
-        with col3:
-            st.markdown("#### 💰 Financial Parameters")
+        # Second row for financial parameters and market conditions
+        st.markdown("#### 💰 Financial & Market Parameters")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
             price_per_unit = st.number_input(
                 "Price per Unit ($)",
                 min_value=0.01,
@@ -364,6 +370,7 @@ def create_prediction_interface():
                 help="Strategic pricing per unit in USD"
             )
             
+        with col2:
             units_sold = st.number_input(
                 "Projected Units",
                 min_value=1,
@@ -373,6 +380,15 @@ def create_prediction_interface():
                 help="Projected sales volume"
             )
         
+        with col3:
+            # Add advanced options
+            market_condition = st.selectbox(
+                "Market Conditions",
+                ["Optimal", "Standard", "Challenging"],
+                index=1,
+                help="Current market environment assessment"
+            )
+        
         # Financial summary
         total_sales = price_per_unit * units_sold
         st.markdown(f"""
@@ -380,7 +396,7 @@ def create_prediction_interface():
             <h4>📋 Executive Summary</h4>
             <p><strong>Total Revenue Projection:</strong> ${total_sales:,.2f}</p>
             <p><strong>Market Conditions:</strong> {market_condition}</p>
-            <p><strong>Strategic Focus:</strong> {product} in {region} via {sales_method}</p>
+            <p><strong>Strategic Focus:</strong> {product} in {region} via {sales_method} with {retailer}</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -393,7 +409,7 @@ def create_prediction_interface():
                 type="primary"
             )
     
-    return submitted, product, region, sales_method, price_per_unit, units_sold, total_sales, market_condition
+    return submitted, product, region, sales_method, retailer, price_per_unit, units_sold, total_sales, market_condition
 
 def display_prediction_results(result, total_sales, market_condition):
     """Display enhanced prediction results with executive insights"""
@@ -476,12 +492,12 @@ def main():
     
     # Main prediction interface
     form_data = create_prediction_interface()
-    submitted, product, region, sales_method, price_per_unit, units_sold, total_sales, market_condition = form_data
+    submitted, product, region, sales_method, retailer, price_per_unit, units_sold, total_sales, market_condition = form_data
     # Handle prediction with enhanced results
     if submitted:
         with st.spinner("🤖 AI analyzing market scenario and generating strategic insights..."):
             time.sleep(2)  # Enhanced loading experience
-            result, error = make_prediction(product, region, sales_method, price_per_unit, units_sold)
+            result, error = make_prediction(product, region, sales_method, retailer, price_per_unit, units_sold)
         
         if error:
             st.markdown(f"""
