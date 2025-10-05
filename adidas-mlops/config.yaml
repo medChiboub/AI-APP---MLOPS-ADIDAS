@@ -1,0 +1,82 @@
+# Adidas MLOps Configuration File
+# Configuration settings for the entire pipeline
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  title: "Adidas Operating Profit Prediction API"
+  version: "1.0.0"
+  debug: false
+
+# Streamlit Configuration
+streamlit:
+  host: "0.0.0.0"
+  port: 8501
+  api_base_url: "http://localhost:8000"
+  
+# Model Configuration
+model:
+  type: "RandomForest"  # or "XGBoost"
+  save_path: "./models/"
+  retrain_threshold_days: 30
+  performance_threshold:
+    min_r2: 0.7
+    max_mae: 500
+
+# Data Configuration
+data:
+  raw_path: "./data/raw/"
+  processed_path: "./data/processed/"
+  input_file: "adidas.csv"
+  output_file: "cleaned_adidas.csv"
+  
+# Feature Engineering
+features:
+  categorical:
+    - "Region"
+    - "Product" 
+    - "Sales Method"
+  numerical:
+    - "Price per Unit"
+    - "Units Sold"
+    - "Year"
+    - "Month"
+    - "Quarter"
+  derived:
+    - "Profit_Margin"
+    - "Revenue_per_Unit"
+
+# Training Configuration
+training:
+  test_size: 0.2
+  random_state: 42
+  cross_validation_folds: 5
+  hyperparameter_tuning: true
+  
+# Hyperparameter Grids
+hyperparameters:
+  RandomForest:
+    n_estimators: [100, 200, 300]
+    max_depth: [10, 20, null]
+    min_samples_split: [2, 5, 10]
+    min_samples_leaf: [1, 2, 4]
+  
+  XGBoost:
+    n_estimators: [100, 200, 300]
+    max_depth: [3, 6, 10]
+    learning_rate: [0.01, 0.1, 0.2]
+    subsample: [0.8, 0.9, 1.0]
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/adidas_mlops.log"
+
+# Docker Configuration
+docker:
+  image_name: "adidas-mlops"
+  tag: "latest"
+  networks:
+    - "adidas-network"
