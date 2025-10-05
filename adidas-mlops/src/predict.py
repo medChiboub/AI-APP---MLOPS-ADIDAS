@@ -130,8 +130,7 @@ class ProfitPredictor:
             "model_type": self.metadata['model_type'],
             "training_date": self.metadata['training_date'],
             "performance_metrics": self.metadata['performance_metrics'],
-            "feature_columns": self.feature_columns,
-            "training_data_shape": self.metadata['training_data_shape']
+            "feature_columns": self.feature_columns
         }
     
     def get_feature_importance(self):

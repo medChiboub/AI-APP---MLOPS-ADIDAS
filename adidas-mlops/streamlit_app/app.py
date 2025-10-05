@@ -258,56 +258,6 @@ def display_system_status():
     
     return health_status
 
-def create_executive_sidebar():
-    """Create enhanced executive sidebar with KPIs"""
-    with st.sidebar:
-        st.markdown("## 📊 EXECUTIVE DASHBOARD")
-        
-        # Model Performance Section
-        st.markdown("### 🤖 AI Model Performance")
-        model_info = get_model_info()
-        if model_info:
-            perf = model_info['performance_metrics']
-            st.markdown(f"""
-            <div class="sidebar-metric">
-                <strong>Model Type:</strong> {model_info['model_type']}<br>
-                <strong>Accuracy (R²):</strong> {perf['r2_score']:.1%}<br>
-                <strong>Avg Error:</strong> ${perf['mean_absolute_error']:.0f}<br>
-                <strong>Training Date:</strong> {model_info['training_date']}
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Quick Analytics
-        st.markdown("### 📈 Quick Analytics")
-        
-        # Market segments performance (simulated data for demo)
-        segments = ["Premium", "Performance", "Lifestyle", "Originals"]
-        performance = [85, 78, 82, 90]  # Simulated performance scores
-        
-        fig_pie = px.pie(
-            values=performance, 
-            names=segments,
-            title="Market Segment Performance",
-            color_discrete_sequence=px.colors.qualitative.Set3
-        )
-        fig_pie.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig_pie, use_container_width=True)
-        
-        # Regional insights
-        st.markdown("### 🌍 Regional Insights")
-        regions_data = {
-            "Region": ["North America", "Europe", "Asia-Pacific", "Latin America"],
-            "Growth": ["+12%", "+8%", "+15%", "+6%"],
-            "Status": ["🟢", "🟡", "🟢", "🟡"]
-        }
-        st.dataframe(pd.DataFrame(regions_data), hide_index=True, use_container_width=True)
-        
-        # Executive alerts
-        st.markdown("### � Executive Alerts")
-        st.info("💡 Consider expanding in Asia-Pacific market")
-        st.warning("⚠️ Monitor Latin America performance")
-        st.success("✅ Premium segment exceeding targets")
-
 def create_prediction_interface():
     """Create enhanced prediction interface"""
     st.markdown("## 🎯 PROFIT PREDICTION CENTER")
@@ -486,9 +436,6 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         st.stop()
-    
-    # Executive sidebar
-    create_executive_sidebar()
     
     # Main prediction interface
     form_data = create_prediction_interface()

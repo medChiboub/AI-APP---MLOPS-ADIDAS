@@ -105,13 +105,15 @@ async def get_model_info():
     
     try:
         info = predictor.get_model_info()
+        print(f"Debug - Model info: {info}")
         return ModelInfoResponse(
             model_type=info["model_type"],
             training_date=info["training_date"],
             performance_metrics=info["performance_metrics"],
-            feature_columns=info["feature_columns"]
+            feature_columns=info["feature_columns"] if info["feature_columns"] is not None else []
         )
     except Exception as e:
+        print(f"Error in get_model_info: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting model info: {str(e)}")
 
 @app.post("/predict", response_model=PredictionResponse)
@@ -130,6 +132,7 @@ async def predict_profit(request: PredictionRequest):
     
     try:
         # Make prediction
+        print(f"Debug - Making prediction with: {request.dict()}")
         predicted_profit = predictor.predict_single(
             product=request.Product,
             region=request.Region,
@@ -162,6 +165,7 @@ async def predict_profit(request: PredictionRequest):
         )
         
     except Exception as e:
+        print(f"Error in predict_profit: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
 @app.get("/categories")
