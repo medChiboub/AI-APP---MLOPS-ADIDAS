@@ -84,6 +84,10 @@ def preprocess_data(df, is_training=True, encoders_path='../models/label_encoder
         # For inference, we don't have Operating Profit, so we'll set a default
         df_processed['Profit_Margin'] = 0.3  # Default profit margin assumption
     
+    # Handle infinite values and NaN values
+    df_processed = df_processed.replace([np.inf, -np.inf], np.nan)
+    df_processed = df_processed.dropna()
+    
     # Handle categorical encoding
     categorical_features = ['Region', 'Product', 'Sales Method', 'Retailer']
     
