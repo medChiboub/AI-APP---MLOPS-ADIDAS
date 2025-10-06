@@ -14,8 +14,8 @@ import numpy as np
 
 # Configure Streamlit page with professional styling
 st.set_page_config(
-    page_title="Adidas Profit Intelligence Platform",
-    page_icon="�",
+    page_title="Adidas Operating Profit AI Intelligence Platform",
+    page_icon="👟",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -283,11 +283,11 @@ def create_prediction_interface():
             )
         
         with col2:
-            st.markdown("#### 🌍 Market Strategy")
+            st.markdown("#### 🌍 Geographic Strategy")
             region = st.selectbox(
-                "Target Market", 
+                "Target Region", 
                 categories["regions"],
-                help="Select geographic market for deployment"
+                help="Select geographic region for deployment"
             )
         
         with col3:
@@ -306,9 +306,9 @@ def create_prediction_interface():
                 help="Select retail partner for this scenario"
             )
         
-        # Second row for financial parameters and market conditions
-        st.markdown("#### 💰 Financial & Market Parameters")
-        col1, col2, col3 = st.columns(3)
+        # Second row for financial parameters
+        st.markdown("#### 💰 Financial Parameters")
+        col1, col2 = st.columns(2)
         
         with col1:
             price_per_unit = st.number_input(
@@ -330,25 +330,8 @@ def create_prediction_interface():
                 help="Projected sales volume"
             )
         
-        with col3:
-            # Add advanced options
-            market_condition = st.selectbox(
-                "Market Conditions",
-                ["Optimal", "Standard", "Challenging"],
-                index=1,
-                help="Current market environment assessment"
-            )
-        
         # Financial summary
         total_sales = price_per_unit * units_sold
-        st.markdown(f"""
-        <div class="executive-summary">
-            <h4>📋 Executive Summary</h4>
-            <p><strong>Total Revenue Projection:</strong> ${total_sales:,.2f}</p>
-            <p><strong>Market Conditions:</strong> {market_condition}</p>
-            <p><strong>Strategic Focus:</strong> {product} in {region} via {sales_method} with {retailer}</p>
-        </div>
-        """, unsafe_allow_html=True)
         
         # Enhanced submit button
         col1, col2, col3 = st.columns([1, 2, 1])
@@ -359,15 +342,14 @@ def create_prediction_interface():
                 type="primary"
             )
     
-    return submitted, product, region, sales_method, retailer, price_per_unit, units_sold, total_sales, market_condition
+    return submitted, product, region, sales_method, retailer, price_per_unit, units_sold, total_sales
 
-def display_prediction_results(result, total_sales, market_condition):
+def display_prediction_results(result, total_sales):
     """Display enhanced prediction results with executive insights"""
     predicted_profit = result["Predicted_Operating_Profit"]
     
-    # Apply market condition adjustments
-    condition_multipliers = {"Optimal": 1.1, "Standard": 1.0, "Challenging": 0.85}
-    adjusted_profit = predicted_profit * condition_multipliers[market_condition]
+    # Use the actual prediction without market adjustments
+    adjusted_profit = predicted_profit
     
     st.markdown("## 📊 EXECUTIVE PROFIT ANALYSIS")
     
@@ -378,8 +360,7 @@ def display_prediction_results(result, total_sales, market_condition):
         st.metric(
             "💰 Operating Profit",
             f"${adjusted_profit:,.0f}",
-            delta=f"${adjusted_profit - predicted_profit:,.0f}" if market_condition != "Standard" else None,
-            help="AI-predicted operating profit adjusted for market conditions"
+            help="AI-predicted operating profit"
         )
     
     with col2:
@@ -439,7 +420,7 @@ def main():
     
     # Main prediction interface
     form_data = create_prediction_interface()
-    submitted, product, region, sales_method, retailer, price_per_unit, units_sold, total_sales, market_condition = form_data
+    submitted, product, region, sales_method, retailer, price_per_unit, units_sold, total_sales = form_data
     # Handle prediction with enhanced results
     if submitted:
         with st.spinner("🤖 AI analyzing market scenario and generating strategic insights..."):
@@ -458,111 +439,16 @@ def main():
             # Enhanced results display
             st.balloons()  # Celebration for successful prediction
             
-            adjusted_profit, profit_margin = display_prediction_results(result, total_sales, market_condition)
+            adjusted_profit, profit_margin = display_prediction_results(result, total_sales)
             
             # Advanced Analytics Section
-            st.markdown("## 📈 ADVANCED BUSINESS ANALYTICS")
+            st.markdown("## 📈 FINANCIAL ANALYSIS")
             
-            # Create tabs for different analysis views
-            tab1, tab2, tab3, tab4 = st.tabs(["💼 Executive Summary", "📊 Financial Analysis", "🎯 Scenario Modeling", "📋 Strategic Recommendations"])
-            
-            with tab1:
-                create_executive_summary_tab(result, adjusted_profit, total_sales, profit_margin, product, region, sales_method, market_condition)
-            
-            with tab2:
-                create_financial_analysis_tab(adjusted_profit, total_sales, profit_margin, result)
-            
-            with tab3:
-                create_scenario_modeling_tab(adjusted_profit, total_sales, price_per_unit, units_sold)
-            
-            with tab4:
-                create_strategic_recommendations_tab(profit_margin, product, region, sales_method)
+            # Single Financial Analysis section
+            create_financial_analysis_tab(adjusted_profit, total_sales, profit_margin, result)
             
             # Executive export section
-            create_executive_export_section(result, adjusted_profit, total_sales, profit_margin, product, region, sales_method, market_condition)
-
-def create_executive_summary_tab(result, adjusted_profit, total_sales, profit_margin, product, region, sales_method, market_condition):
-    """Create executive summary tab with key insights"""
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### 📋 Strategic Overview")
-        st.markdown(f"""
-        <div class="executive-summary">
-            <p><strong>Product Strategy:</strong> {product}</p>
-            <p><strong>Target Market:</strong> {region}</p>
-            <p><strong>Sales Channel:</strong> {sales_method}</p>
-            <p><strong>Market Environment:</strong> {market_condition}</p>
-            <p><strong>Revenue Projection:</strong> ${total_sales:,.0f}</p>
-            <p><strong>Operating Profit:</strong> ${adjusted_profit:,.0f}</p>
-            <p><strong>Profit Margin:</strong> {profit_margin:.1f}%</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Performance benchmarking
-        st.markdown("### 🏆 Performance Benchmarks")
-        benchmark_data = {
-            "Metric": ["Profit Margin", "Revenue Growth", "Market Share"],
-            "Current": [f"{profit_margin:.1f}%", "+12%", "8.5%"],
-            "Industry Avg": ["20%", "+8%", "6.2%"],
-            "Performance": ["🟢 Above" if profit_margin > 20 else "🟡 Below", "🟢 Above", "🟢 Above"]
-        }
-        st.dataframe(pd.DataFrame(benchmark_data), hide_index=True, use_container_width=True)
-    
-    with col2:
-        st.markdown("### 🎯 Key Performance Indicators")
-        
-        # KPI gauge charts
-        col_a, col_b = st.columns(2)
-        
-        with col_a:
-            # Profit margin gauge
-            gauge_fig = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=profit_margin,
-                domain={'x': [0, 1], 'y': [0, 1]},
-                title={'text': "Profit Margin %"},
-                gauge={
-                    'axis': {'range': [None, 50]},
-                    'bar': {'color': "#1f77b4"},
-                    'steps': [
-                        {'range': [0, 15], 'color': "#ffcccc"},
-                        {'range': [15, 25], 'color': "#ffffcc"},
-                        {'range': [25, 50], 'color': "#ccffcc"}
-                    ],
-                    'threshold': {
-                        'line': {'color': "red", 'width': 4},
-                        'thickness': 0.75,
-                        'value': 20
-                    }
-                }
-            ))
-            gauge_fig.update_layout(height=200, margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(gauge_fig, use_container_width=True)
-        
-        with col_b:
-            # Revenue gauge (normalized to percentage of target)
-            revenue_target = 100000  # Example target
-            revenue_percentage = min((total_sales / revenue_target) * 100, 150)
-            
-            revenue_gauge = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=revenue_percentage,
-                domain={'x': [0, 1], 'y': [0, 1]},
-                title={'text': "Revenue vs Target %"},
-                gauge={
-                    'axis': {'range': [None, 150]},
-                    'bar': {'color': "#2ca02c"},
-                    'steps': [
-                        {'range': [0, 80], 'color': "#ffcccc"},
-                        {'range': [80, 100], 'color': "#ffffcc"},
-                        {'range': [100, 150], 'color': "#ccffcc"}
-                    ]
-                }
-            ))
-            revenue_gauge.update_layout(height=200, margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(revenue_gauge, use_container_width=True)
+            create_executive_export_section(result, adjusted_profit, total_sales, profit_margin, product, region, sales_method)
 
 def create_financial_analysis_tab(adjusted_profit, total_sales, profit_margin, result):
     """Create detailed financial analysis tab"""
@@ -570,226 +456,71 @@ def create_financial_analysis_tab(adjusted_profit, total_sales, profit_margin, r
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("### 💰 Financial Breakdown")
+        st.markdown("### 💰 Financial Analysis")
         
-        # Enhanced financial breakdown
-        estimated_costs = total_sales - adjusted_profit
-        cost_components = {
-            "Component": ["Total Revenue", "Direct Costs", "Operating Expenses", "Operating Profit"],
-            "Amount": [total_sales, estimated_costs * 0.6, estimated_costs * 0.4, adjusted_profit],
-            "Percentage": ["100%", f"{(estimated_costs * 0.6 / total_sales) * 100:.1f}%", 
-                          f"{(estimated_costs * 0.4 / total_sales) * 100:.1f}%", f"{profit_margin:.1f}%"]
+        # Real financial metrics from AI prediction
+        financial_metrics = {
+            "Metric": ["Total Revenue", "Operating Profit", "Profit Margin", "Revenue per Unit"],
+            "Value": [f"${total_sales:,.0f}", f"${adjusted_profit:,.0f}", f"{profit_margin:.1f}%", f"${total_sales / result['Input_Summary']['Units_Sold']:,.2f}"],
+            "Status": ["📊 Projected", "🤖 AI Predicted", "📈 Calculated", "💰 Derived"]
         }
         
-        financial_df = pd.DataFrame(cost_components)
+        financial_df = pd.DataFrame(financial_metrics)
         st.dataframe(financial_df, hide_index=True, use_container_width=True)
         
-        # Waterfall chart
-        fig_waterfall = go.Figure(go.Waterfall(
-            name="20", orientation="v",
-            measure=["relative", "relative", "relative", "total"],
-            x=cost_components["Component"],
-            textposition="outside",
-            text=[f"${x:,.0f}" for x in cost_components["Amount"]],
-            y=cost_components["Amount"],
-            connector={"line": {"color": "rgb(63, 63, 63)"}},
+        # Profit margin visualization
+        fig_profit = go.Figure(go.Bar(
+            x=["Revenue", "Operating Profit"],
+            y=[total_sales, adjusted_profit],
+            marker_color=["#1f77b4", "#2ca02c"],
+            text=[f"${total_sales:,.0f}", f"${adjusted_profit:,.0f}"],
+            textposition='auto',
         ))
         
-        fig_waterfall.update_layout(
-            title="Financial Flow Analysis",
+        fig_profit.update_layout(
+            title="Revenue vs Operating Profit",
             showlegend=False,
-            height=400
+            height=400,
+            yaxis_title="Amount ($)"
         )
-        st.plotly_chart(fig_waterfall, use_container_width=True)
+        st.plotly_chart(fig_profit, use_container_width=True)
     
     with col2:
-        st.markdown("### 📊 Profitability Analysis")
+        st.markdown("### 🤖 AI Model Performance")
         
-        # Profitability trends (simulated)
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-        profit_trend = [adjusted_profit * (0.8 + 0.1 * i) for i in range(6)]
-        
-        fig_trend = px.line(
-            x=months, 
-            y=profit_trend,
-            title="Projected Profit Trend",
-            labels={"x": "Month", "y": "Operating Profit ($)"}
-        )
-        fig_trend.update_traces(line=dict(width=3, color="#1f77b4"))
-        fig_trend.update_layout(height=300)
-        st.plotly_chart(fig_trend, use_container_width=True)
-        
-        # Model performance metrics
-        st.markdown("### 🤖 AI Model Confidence")
+        # Real model performance metrics only
         model_metrics = {
-            "Metric": ["Model Accuracy (R²)", "Prediction Confidence", "Error Margin"],
-            "Value": [f"{result['Model_Info']['r2_score']:.1%}", "High", f"±${result['Model_Info']['mae']:.0f}"],
-            "Rating": ["🟢 Excellent", "🟢 High", "🟢 Low"]
+            "Metric": ["Model Accuracy (R²)", "Error Margin (MAE)", "Model Type"],
+            "Value": [f"{result['Model_Info']['r2_score']:.1%}", f"±${result['Model_Info']['mae']:.0f}", "XGBoost"],
+            "Status": ["🟢 Excellent", "🟢 Low Error", "🤖 AI Model"]
         }
         st.dataframe(pd.DataFrame(model_metrics), hide_index=True, use_container_width=True)
+        
+        # Profit margin gauge (real data only)
+        fig_gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=profit_margin,
+            domain={'x': [0, 1], 'y': [0, 1]},
+            title={'text': "Profit Margin %"},
+            gauge={
+                'axis': {'range': [None, 50]},
+                'bar': {'color': "#1f77b4"},
+                'steps': [
+                    {'range': [0, 15], 'color': "#ffcccc"},
+                    {'range': [15, 25], 'color': "#ffffcc"},
+                    {'range': [25, 50], 'color': "#ccffcc"}
+                ],
+                'threshold': {
+                    'line': {'color': "red", 'width': 4},
+                    'thickness': 0.75,
+                    'value': 20
+                }
+            }
+        ))
+        fig_gauge.update_layout(height=300)
+        st.plotly_chart(fig_gauge, use_container_width=True)
 
-def create_scenario_modeling_tab(adjusted_profit, total_sales, price_per_unit, units_sold):
-    """Create scenario modeling tab"""
-    
-    st.markdown("### 🎯 Strategic Scenario Analysis")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("#### 📈 Volume Scenarios")
-        
-        # Volume scenario analysis
-        volume_scenarios = ["Conservative (-30%)", "Realistic (Base)", "Optimistic (+50%)", "Aggressive (+100%)"]
-        volume_multipliers = [0.7, 1.0, 1.5, 2.0]
-        volume_profits = [adjusted_profit * mult for mult in volume_multipliers]
-        volume_revenues = [total_sales * mult for mult in volume_multipliers]
-        
-        volume_df = pd.DataFrame({
-            "Scenario": volume_scenarios,
-            "Units": [f"{int(units_sold * mult):,}" for mult in volume_multipliers],
-            "Revenue": [f"${rev:,.0f}" for rev in volume_revenues],
-            "Profit": [f"${profit:,.0f}" for profit in volume_profits],
-            "Margin": [f"{(profit/rev)*100:.1f}%" for profit, rev in zip(volume_profits, volume_revenues)]
-        })
-        
-        st.dataframe(volume_df, hide_index=True, use_container_width=True)
-        
-        # Volume chart
-        fig_volume = px.bar(
-            x=volume_scenarios,
-            y=volume_profits,
-            title="Profit by Volume Scenario",
-            color=volume_profits,
-            color_continuous_scale="Viridis"
-        )
-        fig_volume.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig_volume, use_container_width=True)
-    
-    with col2:
-        st.markdown("#### 💲 Pricing Scenarios")
-        
-        # Pricing scenario analysis
-        price_scenarios = ["Discount (-20%)", "Current Price", "Premium (+15%)", "Luxury (+30%)"]
-        price_multipliers = [0.8, 1.0, 1.15, 1.3]
-        price_revenues = [price_per_unit * units_sold * mult for mult in price_multipliers]
-        price_profits = [adjusted_profit * mult * 1.2 for mult in price_multipliers]  # Assume higher margin with higher price
-        
-        price_df = pd.DataFrame({
-            "Scenario": price_scenarios,
-            "Price": [f"${price_per_unit * mult:.2f}" for mult in price_multipliers],
-            "Revenue": [f"${rev:,.0f}" for rev in price_revenues],
-            "Profit": [f"${profit:,.0f}" for profit in price_profits],
-            "Margin": [f"{(profit/rev)*100:.1f}%" for profit, rev in zip(price_profits, price_revenues)]
-        })
-        
-        st.dataframe(price_df, hide_index=True, use_container_width=True)
-        
-        # Price-profit sensitivity
-        fig_price = px.scatter(
-            x=[price_per_unit * mult for mult in price_multipliers],
-            y=price_profits,
-            size=[50, 75, 100, 125],
-            title="Price-Profit Sensitivity",
-            labels={"x": "Price per Unit ($)", "y": "Operating Profit ($)"},
-            color=price_profits,
-            color_continuous_scale="Blues"
-        )
-        fig_price.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig_price, use_container_width=True)
-
-def create_strategic_recommendations_tab(profit_margin, product, region, sales_method):
-    """Create strategic recommendations tab"""
-    
-    st.markdown("### 🎯 AI-Generated Strategic Recommendations")
-    
-    # Generate recommendations based on profit margin and inputs
-    recommendations = []
-    
-    if profit_margin < 15:
-        recommendations.append({
-            "Priority": "🔴 High",
-            "Action": "Cost Optimization",
-            "Recommendation": "Implement aggressive cost reduction strategies. Consider supply chain optimization and operational efficiency improvements.",
-            "Impact": "Potential 5-8% margin improvement"
-        })
-        recommendations.append({
-            "Priority": "🔴 High", 
-            "Action": "Pricing Strategy",
-            "Recommendation": "Review pricing strategy for premium positioning. Consider value-based pricing approach.",
-            "Impact": "Potential 3-5% margin improvement"
-        })
-    elif profit_margin < 25:
-        recommendations.append({
-            "Priority": "🟡 Medium",
-            "Action": "Market Expansion",
-            "Recommendation": f"Expand {product} presence in {region} market through enhanced {sales_method} strategy.",
-            "Impact": "Potential 10-15% revenue growth"
-        })
-        recommendations.append({
-            "Priority": "🟡 Medium",
-            "Action": "Product Mix",
-            "Recommendation": "Optimize product mix towards higher-margin items. Focus on premium segments.",
-            "Impact": "Potential 2-4% margin improvement"
-        })
-    else:
-        recommendations.append({
-            "Priority": "🟢 Low",
-            "Action": "Market Leadership",
-            "Recommendation": "Maintain market leadership position. Consider strategic acquisitions for market expansion.",
-            "Impact": "Sustained competitive advantage"
-        })
-        recommendations.append({
-            "Priority": "🟢 Low",
-            "Action": "Innovation Investment",
-            "Recommendation": "Increase R&D investment for next-generation products. Focus on sustainability and technology integration.",
-            "Impact": "Long-term growth potential"
-        })
-    
-    # Category-specific recommendations
-    if product == "Men's Street Footwear":
-        recommendations.append({
-            "Priority": "🟡 Medium",
-            "Action": "Digital Marketing",
-            "Recommendation": "Enhance digital marketing for streetwear segment. Partner with influencers and lifestyle brands.",
-            "Impact": "20-30% brand awareness increase"
-        })
-    
-    if region == "West":
-        recommendations.append({
-            "Priority": "🟡 Medium",
-            "Action": "Regional Strategy",
-            "Recommendation": "Leverage West Coast lifestyle trends. Focus on sustainability messaging for environmentally conscious consumers.",
-            "Impact": "Enhanced brand positioning"
-        })
-    
-    # Display recommendations
-    for i, rec in enumerate(recommendations, 1):
-        st.markdown(f"""
-        <div class="executive-summary" style="margin: 10px 0;">
-            <h4>{rec['Priority']} Priority {i}: {rec['Action']}</h4>
-            <p><strong>Recommendation:</strong> {rec['Recommendation']}</p>
-            <p><strong>Expected Impact:</strong> {rec['Impact']}</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # Action plan timeline
-    st.markdown("### 📅 Implementation Timeline")
-    
-    timeline_data = {
-        "Phase": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"],
-        "Focus Area": ["Cost Optimization", "Market Expansion", "Product Innovation", "Strategic Review"],
-        "Key Actions": [
-            "Supply chain audit, Cost reduction initiatives",
-            "Regional expansion, Channel optimization", 
-            "New product launches, R&D investment",
-            "Performance review, Strategy adjustment"
-        ],
-        "Expected ROI": ["5-8%", "10-15%", "15-20%", "Baseline+"]
-    }
-    
-    st.dataframe(pd.DataFrame(timeline_data), hide_index=True, use_container_width=True)
-
-def create_executive_export_section(result, adjusted_profit, total_sales, profit_margin, product, region, sales_method, market_condition):
+def create_executive_export_section(result, adjusted_profit, total_sales, profit_margin, product, region, sales_method):
     """Create executive export section"""
     
     st.markdown("## 💾 EXECUTIVE REPORTING")
@@ -803,7 +534,6 @@ def create_executive_export_section(result, adjusted_profit, total_sales, profit
         "Product_Strategy": product,
         "Target_Market": region,
         "Sales_Channel": sales_method,
-        "Market_Conditions": market_condition,
         "Revenue_Projection_USD": total_sales,
         "Operating_Profit_USD": adjusted_profit,
         "Profit_Margin_Percent": profit_margin,
@@ -860,7 +590,6 @@ STRATEGIC OVERVIEW
 • Product Focus: {product}
 • Target Market: {region}
 • Sales Channel: {sales_method}
-• Market Environment: {market_condition}
 
 FINANCIAL PROJECTIONS
 • Revenue: ${total_sales:,.0f}
